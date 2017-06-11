@@ -1,0 +1,234 @@
+\documentclass[12pt,fleqn]{article}
+
+\usepackage{graphicx}
+\usepackage{paralist}
+\usepackage{amsfonts}
+\usepackage[section]{placeins}
+\usepackage{booktabs,multirow}
+
+\oddsidemargin 0mm
+\evensidemargin 0mm
+\textwidth 160mm
+\textheight 200mm
+\renewcommand\baselinestretch{1.0}
+
+
+\pagestyle {plain}
+\pagenumbering{arabic}
+
+\newcounter{stepnum}
+
+\title{DatabaseBuild.1.0}
+\author{Ben Giller}
+
+\begin {document}
+
+\maketitle
+
+The purpose of this document is to outline how the database will be built
+
+\begin{table}
+\centering
+\label{DB changes}
+    \begin{tabular}{|l|l|l|}
+        \hline
+        Name & Changes & ~ \\ \hline
+        Ben Giller & New Data Plan & ~ \\ 
+        ~ & ~ & ~ \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\newpage
+
+\section* {1 DatabaseBuild}
+
+\subsection*{1.1 Name }
+...
+\subsection*{1.2 Tables }
+
+\begin{itemize}
+\itemsep0em
+  \item Lookup.PermissionMaping
+  \item Lookup.StatusMapping
+  \item Account.Account
+  \item Group.Group
+  \item Group.AccountGroup
+  \item Event.Event
+  \item Event.EventGroupAccount
+  \item Article.Article
+  \item Article.Notes
+  \item Article.ArticleEventOccurance
+  
+\end{itemize}
+\par Note: create in order above
+\section* {2 Account}
+
+\subsection*{2.1 Account.Account }
+\begin{table}[htbp]
+\centering
+\footnotesize
+\label{DB changes}
+    \begin{tabular}{|l|l|l|l|l|l|l|l|}
+        \hline
+        AccountID & E-mail/LoginID & Password & Name & Institution & Status & CreateDate & ~\\ \hline
+        int & varchar & varchar & varchar & varchar & int & date & ~ \\ \hline
+        Automatic & Duplicate Key  & ~ & ~ & ~ & Foreign Key Constraint & Automatic & ~ \\ 
+        ~ &  Constraint & ~ & ~ & ~ & (Lookup.StatusMapping.StatusID) & ~ & ~ \\ \hline
+        \hline
+    \end{tabular}
+\end{table}
+\FloatBarrier
+\newpage
+\section* {3 Group}
+
+\subsection*{3.1 Group.Group }
+\begin{table}[htbp]
+\centering
+\footnotesize
+\label{DB changes}
+    \begin{tabular}{|l|l|l|l|l|l|l|l|l|}
+        \hline
+        GrouptID & Name & Description & StartDate & DeactivationDate & Status & Public & CreateDate & ~\\ \hline
+        int & varchar & varchar & date & date & int & bool & date & ~ \\ \hline
+        Automatic & Duplicate Key Constraint  & ~ & ~ & ~ & ~ & ~ & Automatic & ~ \\ 
+        ~ &  (On Public Only) & ~ & ~ & ~ & ~ & ~ & ~ & ~ \\ 
+        \hline
+    \end{tabular}
+\end{table}
+\FloatBarrier
+\subsection*{3.2 Group.AccountGroup }
+\begin{table}[!ht]
+\centering
+\footnotesize
+\label{DB changes}
+    \begin{tabular}{|l|l|l|l|l|l|l|l|} 
+        \hline
+        AccountGroupID & AccountID & GroupID & DateJoined & DateLeft & Permissions & CreateDate & ~\\ \hline
+        int & int & int & date & date & int & date & ~\\ \hline
+        Automatic & Foreign Key & Foreign Key & ~ & ~  & Foreign Key  & Automatic & ~ \\
+        ~ & Constrain & Constrain & ~ & ~  & Constrain & ~ & ~ \\  
+        ~ &  (Account.Account & (Group.Group & ~ & ~ & (Lookup.Permission & ~ & ~ \\ 
+        ~ &  .AccountID) & .GrouptID) & ~ & ~ & Mapping.PermissionID) & ~ & ~ \\ 
+        \hline    
+    \end{tabular}
+\end{table}
+\FloatBarrier
+\newpage
+\section* {4 Event}
+\subsection*{4.1 Event.Event }
+\begin{table}[htbp]
+\centering
+\footnotesize
+\label{DB changes}
+    \begin{tabular}{|l|l|l|l|l|l|}
+        \hline
+         EventtID & Time & Description & Name &  CreateDate & ~\\ \hline
+         int & date & varchar & varchar &  date & ~\\ \hline
+         Automatic & ~ & ~ & ~ &  ~ & ~ \\ 
+        \hline
+    \end{tabular}
+\end{table}
+\FloatBarrier
+\subsection*{4.2 Event.EventGroupAccount }
+\begin{table}[htbp]
+\centering
+\footnotesize
+\label{DB changes}
+    \begin{tabular}{|l|l|l|l|l|l|l|} 
+        \hline
+        EventGroupAccountID & EventID & GroupID & AccountID  &  CreateDate & ~\\ \hline
+        int & int & int & int & date & date & ~\\ \hline
+        Automatic & Foreign Key & Foreign Key &  Foreign Key  &  Automatic & ~ \\
+        ~ & Constrain & Constrain &  Constrain & ~  & ~  & ~ \\  
+        ~ &  (Event.Event & (Group.Group & Account.Account  & ~ & ~ & ~ \\ 
+        ~ &  .EventID) & .GrouptID) & .AccountID  & ~ & ~ & ~ \\ 
+        \hline  
+    \end{tabular}
+\end{table}
+\FloatBarrier
+\newpage
+\section* {5 Article}
+\subsection*{5.1 Article.Article}
+\begin{table}[htbp]
+\centering
+\footnotesize
+\label{DB changes}
+    \begin{tabular}{|l|l|l|l|l|l|l|} 
+        \hline
+        ArticleID & AccountID(who entered it) & StorageType & CreateDate & ~\\ \hline
+        int & int & XML & date & ~\\ \hline
+        Automatic & Foreign Key Constraint & ~ &  Automatic & ~ \\
+        ~ & (Account.AccountID) & ~ & ~ & ~ \\
+        \hline  
+    \end{tabular}
+\end{table}
+\FloatBarrier
+\subsection*{5.2 Article.Notes }
+\par NOTE: maybe make a lookup table for type
+\begin{table}[htbp]
+\centering
+\footnotesize
+\label{DB changes}
+    \begin{tabular}{|l|l|l|l|l|l|l|l|} 
+        \hline
+        NoteID & ArticleID & AccountID & Note & Placement & Type &  CreateDate & ~\\ \hline
+        int & int & int & varchar & varchar & varchar & date & ~\\ \hline
+        Automatic & Foreign Key & Foreign Key & ~  & ~  & ~  &  Automatic & ~ \\
+        ~ &  Constrain &  Constrain & ~  & ~  & ~  &  ~ & ~  \\  
+        ~ &  (Article.Articel.ArticleID) & (Account.Account.AccountID) & ~  & ~ & ~ & ~ \\ 
+        \hline  
+    \end{tabular}
+\end{table}
+\FloatBarrier
+\subsection*{5.3 Article.ArticleEventOccurance }
+\begin{table}[htbp]
+\centering
+\footnotesize
+\label{DB changes}
+    \begin{tabular}{|l|l|l|l|l|l|l|} 
+        \hline
+        ArticleEventGroupOccurenceID &ArticleID & EventID & DateDue & Status & CreateDate & ~\\ \hline
+        int & int & int & date & int &  date & ~\\ \hline
+        Automatic & Foreign Key & Foreign Key & ~  & Foreign Key  &   Automatic & ~ \\
+        ~ &  Constrain &  Constrain & ~  & Constraint  & ~  &  ~  \\  
+        ~ &  (Article.Articel & (Event.Event & ~  & (LoopUp.StatusMapping & ~ & ~ \\ 
+        ~ &  .ArticleID) & .EventID) &  ~ & .StatusID) & ~ & ~ \\ 
+        \hline  
+    \end{tabular}
+\end{table}
+\FloatBarrier
+\newpage
+\section* {6 LookUp}
+\subsection*{6.1 LookUp.PermissionMapping}
+\begin{table}[htbp]
+\centering
+\footnotesize
+\label{DB changes}
+    \begin{tabular}{|l|l|l|l|} 
+        \hline
+        PermissionID & PermissionDesc & CreateDate & ~\\ \hline
+        int & varchar & date & ~\\ \hline
+        Automatic & ~  & ~ & ~ \\
+        \hline  
+    \end{tabular}
+\end{table}
+\FloatBarrier
+
+\subsection*{6.2 LookUp.StatusMapping}
+\begin{table}[htbp]
+\centering
+\footnotesize
+\label{DB changes}
+    \begin{tabular}{|l|l|l|l|} 
+        \hline
+        StatusID & StatusDesc & CreateDate & ~\\ \hline
+        int & varchar & date & ~\\ \hline
+        Automatic & ~  & ~ & ~ \\
+        \hline  
+    \end{tabular}
+\end{table}
+\FloatBarrier
+
+
+\end {document}
